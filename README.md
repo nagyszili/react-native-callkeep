@@ -113,6 +113,11 @@ Alternative on iOS you can perform setup in `AppDelegate.m`. Doing this allows c
       If provided, it will be displayed on system UI during the call
     - `ringtoneSound`: string (optional)
       If provided, it will be played when incoming calls received; the system will use the default ringtone if this is not provided
+    - `handleType`: string|array (optional)
+      If provided, it will tell iOS what kind of handle(s) (number) your app can handle.
+      - `generic`
+      - `number` (default)
+      - `email`
     - `includesCallsInRecents`: boolean (optional)
       If provided, calls will be shown in the recent calls when true and not when false (ios 11 and above) (Default: true)
     - `maximumCallGroups`: string (optional)
@@ -121,6 +126,9 @@ Alternative on iOS you can perform setup in `AppDelegate.m`. Doing this allows c
       If provided, the maximum number of calls in a single group, used for conferencing (Default: 1, no conferencing)
     - `supportsVideo`: boolean (optional)
       If provided, whether or not the application supports video calling (Default: true)
+    - `displayCallReachabilityTimeout`: number in ms (optional)
+      If provided, starts a timeout that checks if the application is reachable and ends the call if not (Default: null)
+      You'll have to call `setReachable()` as soon as your Javascript application is started.
   - `android`: object
     - `alertTitle`: string (required)
       When asking for _phone account_ permission, we need to provider a title for the `Alert` to ask the user for it
@@ -139,8 +147,13 @@ Alternative on iOS you can perform setup in `AppDelegate.m`. Doing this allows c
       multiple popups to the user at different times.
     - `selfManaged`: boolean (optional)
       When set to true, call keep will configure itself to run as a self managed connection service. This is an advanced topic, and it's best to refer to [Googles Documentation](https://developer.android.com/guide/topics/connectivity/telecom/selfManaged) on the matter.
+      - `displayCallReachabilityTimeout`: number in ms (optional)
+        If provided, starts a timeout that checks if the application is reachable and ends the call if not (Default: null)
+        You'll have to call `setReachable()` as soon as your Javascript application is started.
       
-`setup` calls internally `registerPhoneAccount` and `registerEvents`.
+`setup` calls internally `registerPhoneAccount`, `registerEvents` and `setSettings`.
+
+You can alternatively just call `setSettings()` with the same option as `setup()` to define only your settings.
 
 # Constants
 
@@ -190,7 +203,8 @@ Self Managed calling apps are an advanced topic, and there are many steps involv
 
 | Method                                                            | Return Type         |  iOS | Android |
 | ----------------------------------------------------------------- | ------------------- | :--: | :-----: |
-| [getInitialEvents()](#getInitialEvents)                           | `Promise<String[]>` |  ✅  |   ❌    |
+| [getInitialEvents()](#getInitialEvents)                           | `Promise<String[]>` |  ✅  |   ✅    |
+| [clearInitialEvents()](#clearInitialEvents)                       | `void>`             |  ✅  |   ✅    |
 | [setAvailable()](#setAvailable)                                   | `Promise<void>`     |  ❌  |   ✅    |
 | [setForegroundServiceSettings()](#setForegroundServiceSettings)   | `Promise<void>`     |  ❌  |   ✅    |
 | [canMakeMultipleCalls()](#canMakeMultipleCalls)                   | `Promise<void>`     |  ❌  |   ✅    |
@@ -224,12 +238,19 @@ Self Managed calling apps are an advanced topic, and there are many steps involv
 
 
 ### getInitialEvents
-_This feature is available only on iOS._
 
 If there were some actions performed by user before JS context has been created, this method would return early fired events. This is alternative to "didLoadWithEvents" event.
 
 ```js
 RNCallKeep.getInitialEvents();
+```
+
+### clearInitialEvents
+
+Clear all pending actions returned by `getInitialEvents()`.
+
+```js
+RNCallKeep.clearInitialEvents();
 ```
 
 ### setAvailable
@@ -570,7 +591,7 @@ await RNCallKeep.setAudioRoute(uuid, routeName);
 - `routeName`: String
   - AudioRoute.name. 
 
-### supportConnectionService (async)
+### supportConnectionService
 
 _This feature is available only on Android._
 
