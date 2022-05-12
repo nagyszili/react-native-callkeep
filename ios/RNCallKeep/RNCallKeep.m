@@ -421,7 +421,7 @@ RCT_EXPORT_METHOD(updateDisplay:(NSString *)uuidString :(NSString *)displayName 
     CXHandle *callHandle = [[CXHandle alloc] initWithType:CXHandleTypePhoneNumber value:uri];
     CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
     callUpdate.localizedCallerName = displayName;
-    callUpdate.remoteHandle = callHandle;
+    // callUpdate.remoteHandle = callHandle;
 
     if ([options valueForKey:@"hasVideo"] != nil) {
         callUpdate.hasVideo = [RCTConvert BOOL:options[@"hasVideo"]];
@@ -761,7 +761,7 @@ RCT_EXPORT_METHOD(getAudioRoutes: (RCTPromiseResolveBlock)resolve
     int _handleType = [RNCallKeep getHandleType:handleType];
     NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
     CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
-    callUpdate.remoteHandle = [[CXHandle alloc] initWithType:_handleType value:handle];
+    // callUpdate.remoteHandle = [[CXHandle alloc] initWithType:_handleType value:handle];
     callUpdate.supportsHolding = supportsHolding;
     callUpdate.supportsDTMF = supportsDTMF;
     callUpdate.supportsGrouping = supportsGrouping;
